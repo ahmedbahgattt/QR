@@ -16,7 +16,7 @@ const GS1QRGenerator: React.FC = () => {
     let result = "";
     for (let i = 0; i < 6; i++) {
       result += alphanumeric.charAt(
-        Math.floor(Math.random() * alphanumeric.length)
+        Math.floor(Math.random() * alphanumeric.length),
       );
     }
     return result;
@@ -97,9 +97,23 @@ const GS1QRGenerator: React.FC = () => {
   }, [showInput]);
 
   return (
-    <div className="gs1-container">
+    <div
+      className="gs1-container"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        width: "100%",
+        backgroundColor: "#000000",
+        minHeight: "100vh",
+        padding: "20px",
+      }}
+    >
       {showInput ? (
-        <div className="input-container">
+        <div
+          className="input-container"
+          style={{ width: "100%", padding: "20px", textAlign: "center" }}
+        >
           <h1
             style={{
               color: "#e7ff4b",
@@ -109,8 +123,30 @@ const GS1QRGenerator: React.FC = () => {
           >
             Bahgat MDCN QR Generator
           </h1>
-          <div className="input-group">
-            <label className="input-label">Enter your code</label>
+          <div
+            className="input-group"
+            style={{
+              backgroundColor: "#1c1c1e",
+              borderRadius: "12px",
+              padding: "15px",
+              marginBottom: "15px",
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px",
+            }}
+          >
+            <label
+              className="input-label"
+              style={{
+                color: "#e7ff4b",
+                fontSize: "14px",
+                marginBottom: "8px",
+                textAlign: "left",
+                display: "block",
+              }}
+            >
+              Enter your code ({gtin.length}/6)
+            </label>
             <input
               type="number"
               inputMode="numeric"
@@ -120,7 +156,15 @@ const GS1QRGenerator: React.FC = () => {
               onChange={(e) => validateGtin(e.target.value)}
               maxLength={6}
               autoFocus
-              style={{ fontSize: "24px" }}
+              style={{
+                fontSize: "24px",
+                backgroundColor: "#1c1c1e",
+                border: "1px solid #e7ff4b",
+                color: "white",
+                width: "100%",
+                padding: "8px",
+                borderRadius: "5px",
+              }}
             />
           </div>
           <div className="wave-background" />
@@ -141,6 +185,12 @@ const GS1QRGenerator: React.FC = () => {
                   borderRadius: "5px",
                   cursor: "pointer",
                   fontWeight: "bold",
+                  position: "relative",
+                  width: "auto",
+                  display: "block",
+                  left: "auto",
+                  bottom: "auto",
+                  transform: "none",
                 }}
               >
                 Adjust QR Size
@@ -156,17 +206,48 @@ const GS1QRGenerator: React.FC = () => {
                 borderLeft: "4px solid #e7ff4b",
               }}
             >
-              <label
+              <div
                 style={{
-                  color: "#e7ff4b",
-                  display: "block",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                   marginBottom: "10px",
-                  fontSize: "14px",
-                  fontWeight: "bold",
                 }}
               >
-                QR Size: {qrSize}px
-              </label>
+                <label
+                  style={{
+                    color: "#e7ff4b",
+                    display: "block",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  QR Size: {qrSize}px
+                </label>
+                <button
+                  onClick={() => setShowSizeSelector(false)}
+                  style={{
+                    background: "transparent",
+                    border: "2px solid #e7ff4b",
+                    color: "#e7ff4b",
+                    fontSize: "20px",
+                    cursor: "pointer",
+                    padding: "4px 8px",
+                    fontWeight: "bold",
+                    lineHeight: "1",
+                    borderRadius: "4px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "30px",
+                    height: "30px",
+                    hover: { backgroundColor: "#e7ff4b", color: "#000" },
+                  }}
+                  title="Close"
+                >
+                  ✕
+                </button>
+              </div>
               <input
                 type="range"
                 min="150"
@@ -178,30 +259,6 @@ const GS1QRGenerator: React.FC = () => {
                   cursor: "pointer",
                 }}
               />
-              <div
-                style={{
-                  display: "flex",
-                  gap: "10px",
-                  marginTop: "10px",
-                }}
-              >
-                <button
-                  onClick={() => setShowSizeSelector(false)}
-                  style={{
-                    flex: 1,
-                    padding: "8px",
-                    fontSize: "12px",
-                    backgroundColor: "#e7ff4b",
-                    color: "#000",
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Done
-                </button>
-              </div>
             </div>
           )}
           <QRCode
