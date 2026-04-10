@@ -241,7 +241,6 @@ const GS1QRGenerator: React.FC = () => {
                     justifyContent: "center",
                     width: "30px",
                     height: "30px",
-                    hover: { backgroundColor: "#e7ff4b", color: "#000" },
                   }}
                   title="Close"
                 >
