@@ -7,6 +7,8 @@ const GS1QRGenerator: React.FC = () => {
   const [batchNumber, setBatchNumber] = useState("");
   const [expirationDate, setExpirationDate] = useState("");
   const [serialNumber, setSerialNumber] = useState("");
+  const [qrSize, setQrSize] = useState(256);
+  const [showSizeSelector, setShowSizeSelector] = useState(false);
 
   // Generate random batch number (6 alphanumeric characters)
   const generateBatchNumber = () => {
@@ -56,11 +58,12 @@ const GS1QRGenerator: React.FC = () => {
     }
   };
 
-  // Generate GS1 data string
+  // Generate GS1 data string with proper formatting for scanner compatibility
   const generateGS1Data = () => {
-    // Add 8 zeros as prefix to user's 6-digit input
-    const completeGtin = `00000000${gtin.padStart(6, "0")}`;
-    return `01${completeGtin}17${expirationDate}10${batchNumber}#21${serialNumber}`;
+    const gs1Separator = "\x1d"; // Group Separator - proper GS1 delimiter for scanners
+    // GS1-128 format: AI(01)GTIN + AI(17)ExpirationDate + AI(10)Batch + AI(21)SerialNumber
+    const completeGtin = gtin.padStart(14, "0");
+    return `${gs1Separator}01${completeGtin}${gs1Separator}17${expirationDate}${gs1Separator}10${batchNumber}${gs1Separator}21${serialNumber}`;
   };
 
   // Auto-update serial number every 0.5 seconds when QR is showing
@@ -124,9 +127,86 @@ const GS1QRGenerator: React.FC = () => {
         </div>
       ) : (
         <div className="qr-container">
+          {!showSizeSelector ? (
+            <>
+              <button
+                onClick={() => setShowSizeSelector(true)}
+                style={{
+                  marginBottom: "20px",
+                  padding: "10px 20px",
+                  fontSize: "14px",
+                  backgroundColor: "#e7ff4b",
+                  color: "#000",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                }}
+              >
+                Adjust QR Size
+              </button>
+            </>
+          ) : (
+            <div
+              style={{
+                marginBottom: "20px",
+                padding: "15px",
+                backgroundColor: "rgba(231, 255, 75, 0.1)",
+                borderRadius: "8px",
+                borderLeft: "4px solid #e7ff4b",
+              }}
+            >
+              <label
+                style={{
+                  color: "#e7ff4b",
+                  display: "block",
+                  marginBottom: "10px",
+                  fontSize: "14px",
+                  fontWeight: "bold",
+                }}
+              >
+                QR Size: {qrSize}px
+              </label>
+              <input
+                type="range"
+                min="150"
+                max="500"
+                value={qrSize}
+                onChange={(e) => setQrSize(parseInt(e.target.value))}
+                style={{
+                  width: "100%",
+                  cursor: "pointer",
+                }}
+              />
+              <div
+                style={{
+                  display: "flex",
+                  gap: "10px",
+                  marginTop: "10px",
+                }}
+              >
+                <button
+                  onClick={() => setShowSizeSelector(false)}
+                  style={{
+                    flex: 1,
+                    padding: "8px",
+                    fontSize: "12px",
+                    backgroundColor: "#e7ff4b",
+                    color: "#000",
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          )}
           <QRCode
             value={generateGS1Data()}
-            size={256}
+            size={qrSize}
             level="H"
             style={{ width: "70%", height: "auto" }}
             imageSettings={{
@@ -145,6 +225,7 @@ const GS1QRGenerator: React.FC = () => {
             onClick={() => {
               setShowInput(true);
               setGtin("");
+              setShowSizeSelector(false);
             }}
           >
             <span>Enter New Code</span>
