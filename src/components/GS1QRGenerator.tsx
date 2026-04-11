@@ -75,11 +75,10 @@ const GS1QRGenerator: React.FC = () => {
     }
   };
 
-  // Generate GS1 data string with proper formatting for scanner compatibility
+  // Generate GS1 data string with a literal # delimiter so scanners read it as text
   const generateGS1Data = () => {
-    const gs1Separator = "\x1d"; // Group Separator - proper GS1 delimiter for scanners
     const gtin14 = formatGtin14(gtin);
-    return `01${gtin14}21${serialNumber}${gs1Separator}17${expirationDate}10${batchNumber}`;
+    return `01${gtin14}21${serialNumber}#17${expirationDate}10${batchNumber}`;
   };
 
   const renderBarcode = () => {
@@ -97,8 +96,8 @@ const GS1QRGenerator: React.FC = () => {
         height: 20,
         width: 20,
         parse: true,
-        parsefnc: true,
-        gs1: true,
+        parsefnc: false,
+        gs1: false,
       } as any);
     } catch (error) {
       console.error("bwip-js render error:", error);
