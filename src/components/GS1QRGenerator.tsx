@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { QRCodeSVG as QRCode } from "qrcode.react";
+import React, { useState, useEffect, useRef } from "react";
+import bwipjs from "bwip-js/browser";
 
 const GS1QRGenerator: React.FC = () => {
   const [gtin, setGtin] = useState("");
@@ -9,6 +9,7 @@ const GS1QRGenerator: React.FC = () => {
   const [serialNumber, setSerialNumber] = useState("");
   const [qrSize, setQrSize] = useState(256);
   const [showSizeSelector, setShowSizeSelector] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // Generate random batch number (6 alphanumeric characters)
   const generateBatchNumber = () => {
@@ -80,6 +81,35 @@ const GS1QRGenerator: React.FC = () => {
     const gtin14 = formatGtin14(gtin);
     return `01${gtin14}21${serialNumber}${gs1Separator}17${expirationDate}10${batchNumber}`;
   };
+
+  const renderBarcode = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+
+    try {
+      const scale = Math.max(2, Math.round(qrSize / 60));
+      bwipjs.toCanvas(canvas, {
+        bcid: "datamatrix",
+        text: generateGS1Data(),
+        scale,
+        height: 20,
+        width: 20,
+        parse: true,
+        parsefnc: true,
+        gs1: true,
+      } as any);
+    } catch (error) {
+      console.error("bwip-js render error:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!showInput && gtin.length === 6) {
+      renderBarcode();
+    }
+  }, [showInput, gtin, serialNumber, expirationDate, batchNumber, qrSize]);
 
   // Auto-update serial number every 0.5 seconds when QR is showing
   useEffect(() => {
@@ -275,22 +305,14 @@ const GS1QRGenerator: React.FC = () => {
               />
             </div>
           )}
-          <QRCode
-            value={generateGS1Data()}
-            size={qrSize}
-            level="H"
-            style={{ width: "70%", height: "auto" }}
-            imageSettings={{
-              src: "",
-              height: 24,
-              width: 24,
-              excavate: true,
-            }}
+          <canvas
+            ref={canvasRef}
+            style={{ width: "70%", height: "auto", backgroundColor: "white" }}
           />
           <p
             style={{ color: "#e7ff4b", marginTop: "10px", fontSize: "0.8rem" }}
           >
-            Bahgat MDCN QR Code
+            Bahgat MDCN GS1 DataMatrix
           </p>
           <button
             onClick={() => {
