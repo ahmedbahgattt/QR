@@ -96,8 +96,8 @@ const GS1QRGenerator: React.FC = () => {
         height: 20,
         width: 20,
         parse: true,
-        parsefnc: false,
-        gs1: false,
+        parsefnc: true,
+        gs1: true,
       } as any);
     } catch (error) {
       console.error("bwip-js render error:", error);
