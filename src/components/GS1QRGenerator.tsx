@@ -47,6 +47,22 @@ const GS1QRGenerator: React.FC = () => {
     return `${year}${month}${day}`;
   };
 
+  const calculateGtinCheckDigit = (digits13: string) => {
+    const reversedDigits = digits13.split("").reverse();
+    const sum = reversedDigits.reduce((acc, digit, index) => {
+      const value = parseInt(digit, 10);
+      const weight = index % 2 === 0 ? 3 : 1;
+      return acc + value * weight;
+    }, 0);
+    return ((10 - (sum % 10)) % 10).toString();
+  };
+
+  const formatGtin14 = (input: string) => {
+    const padded = input.padStart(13, "0");
+    const checkDigit = calculateGtinCheckDigit(padded);
+    return `${padded}${checkDigit}`;
+  };
+
   // Validate GTIN input (6 digits)
   const validateGtin = (input: string) => {
     const regex = /^\d{0,6}$/;
@@ -61,9 +77,8 @@ const GS1QRGenerator: React.FC = () => {
   // Generate GS1 data string with proper formatting for scanner compatibility
   const generateGS1Data = () => {
     const gs1Separator = "\x1d"; // Group Separator - proper GS1 delimiter for scanners
-    // GS1-128 format: AI(01)GTIN + AI(17)ExpirationDate + AI(10)Batch + AI(21)SerialNumber
-    const completeGtin = gtin.padStart(14, "0");
-    return `${gs1Separator}01${completeGtin}${gs1Separator}17${expirationDate}${gs1Separator}10${batchNumber}${gs1Separator}21${serialNumber}`;
+    const gtin14 = formatGtin14(gtin);
+    return `01${gtin14}21${serialNumber}${gs1Separator}17${expirationDate}10${batchNumber}`;
   };
 
   // Auto-update serial number every 0.5 seconds when QR is showing
