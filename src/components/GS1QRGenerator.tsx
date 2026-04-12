@@ -98,6 +98,9 @@ const GS1QRGenerator: React.FC = () => {
         parse: true,
         parsefnc: true,
         gs1: true,
+        barcolor: "000000",
+        backgroundcolor: "ffffff",
+        padding: 5,
       } as any);
     } catch (error) {
       console.error("bwip-js render error:", error);
@@ -110,14 +113,14 @@ const GS1QRGenerator: React.FC = () => {
     }
   }, [showInput, gtin, serialNumber, expirationDate, batchNumber, qrSize]);
 
-  // Auto-update serial number every 0.5 seconds when QR is showing
+  // Auto-update serial number every 0.7 seconds when QR is showing
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
     if (!showInput && gtin.length === 6) {
       interval = setInterval(() => {
         setSerialNumber(generateSerialNumber());
         setBatchNumber(generateBatchNumber());
-      }, 500);
+      }, 700);
     }
     return () => {
       if (interval) {
