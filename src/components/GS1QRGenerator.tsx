@@ -59,9 +59,7 @@ const GS1QRGenerator: React.FC = () => {
   };
 
   const formatGtin14 = (input: string) => {
-    const padded = input.padStart(13, "0");
-    const checkDigit = calculateGtinCheckDigit(padded);
-    return `${padded}${checkDigit}`;
+    return input.padStart(14, "0");
   };
 
   // Validate GTIN input (6 digits)
@@ -75,7 +73,7 @@ const GS1QRGenerator: React.FC = () => {
     }
   };
 
-  // Generate GS1 data string with a literal # delimiter so scanners read it as text
+  // Generate plain text string with a leading zero for retail scanners
   const generateGS1Data = () => {
     const gtin14 = formatGtin14(gtin);
     return `01${gtin14}21${serialNumber}#17${expirationDate}10${batchNumber}`;
@@ -90,14 +88,11 @@ const GS1QRGenerator: React.FC = () => {
     try {
       const scale = Math.max(2, Math.round(qrSize / 60));
       bwipjs.toCanvas(canvas, {
-        bcid: "datamatrix",
+        bcid: "qrcode",
         text: generateGS1Data(),
         scale,
-        height: 20,
-        width: 20,
-        parse: true,
-        parsefnc: true,
-        gs1: true,
+        parse: false,
+        gs1: false,
         barcolor: "000000",
         backgroundcolor: "ffffff",
         padding: 5,
@@ -314,7 +309,7 @@ const GS1QRGenerator: React.FC = () => {
           <p
             style={{ color: "#e7ff4b", marginTop: "10px", fontSize: "0.8rem" }}
           >
-            Bahgat MDCN GS1 DataMatrix
+            Bahgat MDCN QR Code
           </p>
           <button
             onClick={() => {
