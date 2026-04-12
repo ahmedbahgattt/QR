@@ -48,15 +48,6 @@ const GS1QRGenerator: React.FC = () => {
     return `${year}${month}${day}`;
   };
 
-  const calculateGtinCheckDigit = (digits13: string) => {
-    const reversedDigits = digits13.split("").reverse();
-    const sum = reversedDigits.reduce((acc, digit, index) => {
-      const value = parseInt(digit, 10);
-      const weight = index % 2 === 0 ? 3 : 1;
-      return acc + value * weight;
-    }, 0);
-    return ((10 - (sum % 10)) % 10).toString();
-  };
 
   const formatGtin14 = (input: string) => {
     return input.padStart(14, "0");
