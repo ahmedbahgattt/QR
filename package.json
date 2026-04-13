@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://ahmedbahgattt.github.io/bahgat-qr-mdcn-generator",
+  "homepage": "https://ahmedbahgattt.github.io/QR/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
