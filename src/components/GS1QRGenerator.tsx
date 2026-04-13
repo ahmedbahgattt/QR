@@ -48,7 +48,6 @@ const GS1QRGenerator: React.FC = () => {
     return `${year}${month}${day}`;
   };
 
-
   const formatGtin14 = (input: string) => {
     return input.padStart(14, "0");
   };
@@ -73,17 +72,23 @@ const GS1QRGenerator: React.FC = () => {
   const renderBarcode = () => {
     const canvas = canvasRef.current;
     if (!canvas) {
+      console.error("Canvas ref is not available");
       return;
     }
 
     try {
+      const gs1Data = generateGS1Data();
+      if (!gs1Data) {
+        console.error("GS1 data is empty");
+        return;
+      }
+
       const scale = Math.max(2, Math.round(qrSize / 60));
       bwipjs.toCanvas(canvas, {
         bcid: "qrcode",
-        text: generateGS1Data(),
+        text: gs1Data,
         scale,
         parse: false,
-        gs1: false,
         barcolor: "000000",
         backgroundcolor: "ffffff",
         padding: 5,
@@ -95,7 +100,11 @@ const GS1QRGenerator: React.FC = () => {
 
   useEffect(() => {
     if (!showInput && gtin.length === 6) {
-      renderBarcode();
+      // Use setTimeout to ensure canvas is rendered before drawing
+      const timeoutId = setTimeout(() => {
+        renderBarcode();
+      }, 100);
+      return () => clearTimeout(timeoutId);
     }
   }, [showInput, gtin, serialNumber, expirationDate, batchNumber, qrSize]);
 
@@ -307,6 +316,22 @@ const GS1QRGenerator: React.FC = () => {
               setShowInput(true);
               setGtin("");
               setShowSizeSelector(false);
+            }}
+            style={{
+              backgroundColor: "#e7ff4b",
+              color: "#000000",
+              border: "none",
+              borderRadius: "25px",
+              padding: "16px",
+              fontSize: "16px",
+              fontWeight: "500",
+              width: "50%",
+              margin: "20px auto",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
             }}
           >
             <span>Enter New Code</span>

@@ -1,12 +1,12 @@
 {
-  "name": "bahgat-qr-generator",
+  "name": "bahgat-qr-mdcn-generator",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "homepage": "https://ahmedbahgattt.github.io/bahgat-qr-mdcn-generator",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
